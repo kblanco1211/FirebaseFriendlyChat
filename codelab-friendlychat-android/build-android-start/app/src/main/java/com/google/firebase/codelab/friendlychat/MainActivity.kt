@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
 import com.firebase.ui.auth.BuildConfig
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.codelab.friendlychat.databinding.ActivityMainBinding
 import com.google.firebase.database.ktx.database
@@ -35,6 +36,7 @@ import com.google.firebase.storage.ktx.storage
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var manager: LinearLayoutManager
+    private lateinit var auth: FirebaseAuth
 
     // TODO: implement Firebase instance variables
 
@@ -53,7 +55,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Initialize Firebase Auth and check if the user is signed in
-        // TODO: implement
+        auth = Firebase.auth
+        if (auth.currentUser == null) {
+            // Not signed in, launch the Sign In activity
+            startActivity(Intent(this, SignInActivity::class.java))
+            finish()
+            return
+        }
 
         // Initialize Realtime Database and FirebaseRecyclerAdapter
         // TODO: implement
@@ -77,7 +85,12 @@ class MainActivity : AppCompatActivity() {
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in.
-        // TODO: implement
+        if (auth.currentUser == null) {
+            // Not signed in, launch the Sign In activity
+            startActivity(Intent(this, SignInActivity::class.java))
+            finish()
+            return
+        }
     }
 
     public override fun onPause() {
@@ -109,13 +122,27 @@ class MainActivity : AppCompatActivity() {
         // TODO: implement
     }
 
+    private fun getPhotoUrl(): String? {
+        val user = auth.currentUser
+        return user?.photoUrl?.toString()
+    }
+
+    private fun getUserName(): String? {
+        val user = auth.currentUser
+        return if (user != null) {
+            user.displayName
+        } else ANONYMOUS
+    }
+
     private fun putImageInStorage(storageReference: StorageReference, uri: Uri, key: String?) {
         // Upload the image to Cloud Storage
         // TODO: implement
     }
 
     private fun signOut() {
-        // TODO: implement
+        AuthUI.getInstance().signOut()
+        startActivity(Intent(this, SignInActivity::class.java))
+        finish()
     }
 
     companion object {
@@ -125,4 +152,8 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_IMAGE = 2
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
     }
+}
+
+private fun AuthUI.signOut() {
+    TODO("Not yet implemented")
 }
