@@ -38,8 +38,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var manager: LinearLayoutManager
     private lateinit var auth: FirebaseAuth
 
-    // TODO: implement Firebase instance variables
-
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
             Firebase.database.useEmulator("10.0.2.2", 9000)
